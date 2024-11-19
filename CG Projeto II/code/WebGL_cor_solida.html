@@ -1,0 +1,73 @@
+<html>
+
+<head>
+
+<title>CG Projeto II</title>
+
+<style>
+
+body {
+	background-color: linen;
+}
+
+h1 {
+	font-family: "Tahoma" ,"Helvetica Neue", "Arial", sans-serif;
+	color: maroon;
+	text-align: center;
+}
+
+#test {
+    width: 800px;
+    height:600px;
+    margin: 0px auto;
+    border: 1px solid red;
+   }
+   
+</style>
+
+</head>
+
+<script src="webgl.js"></script>
+
+<script id="vertex-shader" type="notjs">
+
+attribute vec4 position;
+
+attribute vec4 fcolor;
+varying vec4 color;
+
+void main(){
+
+	color = fcolor;
+	gl_Position = position;
+
+}
+
+</script>
+
+<script id="frag-shader" type="notjs">
+
+precision mediump float;
+varying vec4 color;
+
+void main(){
+
+	gl_FragColor = color;
+
+}
+
+</script>
+
+<body onload="init()">
+
+<h1>CG Projeto II</h1>
+
+<div id="test">
+
+	<canvas id="glcanvas1" width="800" height="600"> </canvas>
+	
+</div>
+
+</body>
+
+</html>

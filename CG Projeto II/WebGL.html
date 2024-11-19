@@ -1,0 +1,193 @@
+<html>
+
+<head>
+
+<title>CG Projeto II</title>
+<link rel="icon" type="image/x-icon" href="assets/favicon.ico">
+
+<style>
+
+@font-face {
+	font-family: FOT-SkipStd-B;
+	src: url("assets/FOT-SkipStd-B.otf");
+}
+
+body {
+	background-color: linen;
+}
+
+h1 {
+	font-family: "FOT-SkipStd-B", "Tahoma", "Helvetica Neue", "Arial", sans-serif;
+	color: maroon;
+	text-align: center;
+}
+
+h2 {
+	font-family: "FOT-SkipStd-B", "Tahoma", "Helvetica Neue", "Arial", sans-serif;
+	color: maroon;
+	text-align: center;
+}
+
+#test {
+    width: 800px;
+    height:600px;
+    margin: 0px auto;
+    border: 1px solid red;
+   }
+   
+</style>
+
+</head>
+
+<script src="math.js"></script>
+<script src="webgl.js"></script>
+
+<script id="vertex-shader" type="notjs">
+
+attribute vec4 position;
+attribute vec2 texCoord;
+uniform mat4 transfproj;
+uniform mat4 transf;
+
+varying vec2 v_texCoord;
+
+attribute vec3 normal;
+varying vec3 v_normal;
+
+uniform vec3 lightpos;
+varying vec3 pointToLight;
+
+uniform vec3 campos;
+varying vec3 pointToCam;
+
+attribute vec4 fcolor;
+varying vec4 color;
+
+void main(){
+
+	pointToLight = lightpos - position.xyz;
+	pointToCam = campos - position.xyz;
+	
+	color = fcolor;
+	
+	v_normal = (transf*vec4(normal, 1.0)).xyz;
+	v_texCoord = texCoord;
+	gl_Position = transfproj*position;
+
+}
+
+</script>
+
+<script id="frag-shader" type="notjs">
+
+precision mediump float;
+
+uniform sampler2D tex;
+
+varying vec2 v_texCoord;
+
+varying vec3 v_normal;
+uniform vec3 lightDirection;
+uniform vec3 lightColor;
+
+varying vec3 pointToLight;
+varying vec3 pointToCam;
+
+varying vec4 color;
+
+void main(){
+
+	vec3 pToLight = normalize(pointToLight);
+	vec3 pToCam = normalize(pointToCam);
+	
+	vec3 halfVec = normalize(pToCam + pToLight);
+	
+	vec3 v_normal_n = normalize(v_normal);
+	vec3 lightDirection_n = normalize(-lightDirection);
+	
+	float lightd = dot(v_normal_n, lightDirection_n);
+	float lightp = dot(v_normal_n, pToLight);
+	float lighte = dot(v_normal_n, halfVec);
+	
+	if(lightd < 0.0) lightd = 0.0;
+	if(lightp < 0.0) lightp = 0.0;
+	if(lighte < 0.0) lighte = 0.0;
+	
+	vec3 texColor = texture2D(tex, v_texCoord).rgb;
+	
+	gl_FragColor.rgb = 0.2*lightColor*texColor;
+	gl_FragColor.rgb += 0.2*lightColor*lightd*texColor;
+	gl_FragColor.rgb += 0.6*lightColor*lightp*texColor;
+	gl_FragColor.rgb += lightColor*pow(lighte, 300.0)*texColor;
+	
+	gl_FragColor.a = texture2D(tex, v_texCoord).a;
+	
+}
+
+</script>
+
+<script id="frag-shader2" type="notjs">
+
+precision mediump float;
+
+uniform sampler2D tex;
+
+varying vec2 v_texCoord;
+
+varying vec3 v_normal;
+uniform vec3 lightDirection;
+uniform vec3 lightColor;
+
+varying vec3 pointToLight;
+varying vec3 pointToCam;
+
+varying vec4 color;
+
+void main(){
+
+	vec3 pToLight = normalize(pointToLight);
+	vec3 pToCam = normalize(pointToCam);
+	
+	vec3 halfVec = normalize(pToCam + pToLight);
+	
+	vec3 v_normal_n = normalize(v_normal);
+	vec3 lightDirection_n = normalize(-lightDirection);
+	
+	float lightd = dot(v_normal_n, lightDirection_n);
+	float lightp = dot(v_normal_n, pToLight);
+	float lighte = dot(v_normal_n, halfVec);
+	
+	if(lightd < 0.0) lightd = 0.0;
+	if(lightp < 0.0) lightp = 0.0;
+	if(lighte < 0.0) lighte = 0.0;
+	
+	vec3 texColor = texture2D(tex, v_texCoord).rgb;
+	
+	gl_FragColor.rgb = 0.2*lightColor*texColor;
+	gl_FragColor.rgb += 0.2*lightColor*lightd*texColor;
+	gl_FragColor.rgb += 0.6*lightColor*lightp*texColor;
+	gl_FragColor.rgb += lightColor*pow(lighte, 300.0)*texColor;
+	
+	gl_FragColor.a = texture2D(tex, v_texCoord).a;
+	
+	gl_FragColor = color;
+	
+}
+
+</script>
+
+<body onload="init()">
+
+<h1>CG Projeto II</h1>
+
+<div id="test">
+
+	<canvas id="glcanvas1" width="800" height="600"> </canvas>
+	
+</div>
+
+<h2>P - Pausa Animação<br>T - Muda Tipo de Animação<br>Npd +- / Scroll - Zoom<br>WASD - Move 3D<br>Npd 8 / 2 - Move Up / Down<br>Arrow Keys - Move Camera<br>Nota: Controles de câmera quebrados porque é difícil demais e a internet só usa library pra isso<br>IJLKUO - Move Light</h1>
+
+</body>
+
+</html>
